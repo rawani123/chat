@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import Logo from "../assets/logo.svg";
 import "react-toastify/dist/ReactToastify.css";
@@ -15,18 +15,40 @@ const Register = () => {
     confirmPassword: "",
   });
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
-      const { username, email, password, confirmPassword } = values;
-      const { data } = await axios.post(registerRoute, {
-        username,
-        email,
-        password,
-        confirmPassword,
-      });
-      alert("Form submitted");
-      // Add your form submission logic here
+      const { username, email, password } = values;
+      try {
+        const { data } = await axios.post(registerRoute, {
+          username,
+          email,
+          password,
+        });
+
+        if (data.status === false) {
+          toast.error(data.msg, {
+            position: "top-right",
+            autoClose: 5000,
+            pauseOnHover: false,
+            draggable: true,
+            theme: "dark",
+          });
+        } else if (data.status === true) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          navigate("/login");
+        }
+      } catch (error) {
+        toast.error("An error occurred. Please try again later.", {
+          position: "top-right",
+          autoClose: 5000,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "dark",
+        });
+      }
     }
   };
 
