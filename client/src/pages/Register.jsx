@@ -17,6 +17,12 @@ const Register = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      navigate("/chat");
+    }
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (handleValidation()) {
