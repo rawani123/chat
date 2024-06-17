@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Messages = require("../models/messageModel");
 
 module.exports.getMessages = async (req, res, next) => {
@@ -27,10 +28,9 @@ module.exports.addMessage = async (req, res, next) => {
     const { from, to, message } = req.body;
     const data = await Messages.create({
       message: { text: message },
-      users: [from, to],
-      sender: from,
+      users: [mongoose.Types.ObjectId(from), mongoose.Types.ObjectId(to)],
+      sender: mongoose.Types.ObjectId(from),
     });
-
     if (data) return res.json({ msg: "Message added successfully." });
     else return res.json({ msg: "Failed to add message to the database" });
   } catch (ex) {

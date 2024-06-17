@@ -6,7 +6,7 @@ import loader from "../assets/loader.gif";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import { SetAvatarRoute } from "../utils/ApiRoutes";
+import { setAvatarRoute } from "../utils/ApiRoutes";
 
 export default function SetAvatar() {
   const api = `https://api.multiavatar.com/4645646`;
@@ -35,7 +35,7 @@ export default function SetAvatar() {
       const user = JSON.parse(localStorage.getItem("user"));
 
       try {
-        const { data } = await axios.post(`${SetAvatarRoute}/${user._id}`, {
+        const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
           image: avatars[selectedAvatar],
         });
         console.log(data);

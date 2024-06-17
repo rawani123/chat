@@ -1,65 +1,57 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
-import styled from "styled-components";
-import { allUsersRoute, host } from "../utils/ApiRoutes";
-import ChatContainer from "../components/ChatContainer";
+import { allUsersRoute } from "../utils/ApiRoutes";
 import Contacts from "../components/Contacts";
-import Welcome from "../components/Welcome";
+import Welcome from "../components/Welcome1";
 
-export default function Chat() {
+const Chat = () => {
   const navigate = useNavigate();
-  const socket = useRef();
   const [contacts, setContacts] = useState([]);
-  const [currentChat, setCurrentChat] = useState(undefined);
-  const [currentUser, setCurrentUser] = useState(undefined);
-  useEffect(async () => {
-    if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
-      navigate("/login");
-    } else {
-      setCurrentUser(
-        await JSON.parse(
-          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-        )
-      );
-    }
-  }, []);
-  useEffect(() => {
-    if (currentUser) {
-      socket.current = io(host);
-      socket.current.emit("add-user", currentUser._id);
-    }
-  }, [currentUser]);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(async () => {
-    if (currentUser) {
-      if (currentUser.isAvatarImageSet) {
-        const data = await axios.get(`${allUsersRoute}/${currentUser._id}`);
-        setContacts(data.data);
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!localStorage.getItem("user")) {
+        navigate("/login");
       } else {
-        navigate("/setAvatar");
+        setCurrentUser(JSON.parse(localStorage.getItem("user")));
       }
-    }
-  }, [currentUser]);
-  const handleChatChange = (chat) => {
-    setCurrentChat(chat);
-  };
+    };
+    fetchUser();
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchContacts = async () => {
+      if (currentUser) {
+        if (currentUser.isAvatarImageSet) {
+          try {
+            const { data } = await axios.get(
+              `${allUsersRoute}/${currentUser._id}`
+            );
+            setContacts(data);
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          navigate("/setavatar");
+        }
+      }
+    };
+
+    fetchContacts();
+  }, [currentUser, navigate]);
+
   return (
-    <>
-      <Container>
-        <div className="container">
-          <Contacts contacts={contacts} changeChat={handleChatChange} />
-          {currentChat === undefined ? (
-            <Welcome />
-          ) : (
-            <ChatContainer currentChat={currentChat} socket={socket} />
-          )}
-        </div>
-      </Container>
-    </>
+    <Container>
+      <div className="container">
+        <Contacts contacts={contacts} currentUser={currentUser} />
+        <Welcome currentUser={currentUser} />
+      </div>
+    </Container>
   );
-}
+};
 
 const Container = styled.div`
   height: 100vh;
@@ -81,3 +73,5 @@ const Container = styled.div`
     }
   }
 `;
+
+export default Chat;
