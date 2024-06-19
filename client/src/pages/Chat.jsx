@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -6,9 +6,12 @@ import { allUsersRoute } from "../utils/ApiRoutes";
 import Contacts from "../components/Contacts";
 import Welcome from "../components/Welcome1";
 import ChatContainer from "../components/ChatContainer";
+import { io } from "socket.io-client";
+
 
 const Chat = () => {
   const navigate = useNavigate();
+  const socket = useRef();
   const [contacts, setContacts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [currentChat, setCurrentChat] = useState(undefined);
@@ -25,6 +28,13 @@ const Chat = () => {
   }, [navigate]);
 
   useEffect(() => {
+    if (currentUser) {
+      socket.current = io("http://localhost:5000");
+      socket.current.emit("add-user", currentUser._id);
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
     const fetchContacts = async () => {
       if (currentUser) {
         if (currentUser.isAvatarImageSet) {
@@ -32,7 +42,7 @@ const Chat = () => {
             const { data } = await axios.get(
               `${allUsersRoute}/${currentUser._id}`
             );
-            console.log(currentChat);
+            // console.log(currentChat);
             setContacts(data);
           } catch (error) {
             console.error("Failed to fetch contacts:", error);
@@ -63,7 +73,7 @@ const Chat = () => {
           {isLoaded && currentChat === undefined ? (
             <Welcome currentUser={currentUser} />
           ) : (
-            <ChatContainer currentChat={currentChat} />
+            <ChatContainer currentChat={currentChat} currentUser={currentUser} socket={socket} />
           )}
         </div>
       )}
