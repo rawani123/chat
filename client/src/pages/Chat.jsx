@@ -1,75 +1,82 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { allUsersRoute } from "../utils/ApiRoutes";
-import Contacts from "../components/Contacts";
-import Welcome from "../components/Welcome1";
+import { io } from "socket.io-client";
+import styled from "styled-components";
+import { allUsersRoute, host } from "../utils/ApiRoutes";
 import ChatContainer from "../components/ChatContainer";
+import Contact from "../components/Contacts";
+import Welcome from "../components/Welcome1";
 
-const Chat = () => {
+export default function Chat() {
   const navigate = useNavigate();
+  const socket = useRef();
   const [contacts, setContacts] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
   const [currentChat, setCurrentChat] = useState(undefined);
+  const [currentUser, setCurrentUser] = useState(undefined);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) {
+    if (!localStorage.getItem("user")) {
       navigate("/login");
     } else {
-      setCurrentUser(JSON.parse(user));
+      const user = JSON.parse(localStorage.getItem("user"));
+      setCurrentUser(user);
       setIsLoaded(true);
     }
-  }, [navigate]);
+  }, []);
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.emit("add-user", currentUser._id);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
-    const fetchContacts = async () => {
-      if (currentUser) {
+    const getAllcontacts = async () => {
+      try {
         if (currentUser.isAvatarImageSet) {
-          try {
-            const { data } = await axios.get(
-              `${allUsersRoute}/${currentUser._id}`
-            );
-            console.log(currentChat);
-            setContacts(data);
-          } catch (error) {
-            console.error("Failed to fetch contacts:", error);
-            // Optionally set some error state to inform the user
-          }
+          const { data } = await axios.get(
+            `http://localhost:5000/api/v1/auth/allusers/${currentUser._id}`
+          );
+          setContacts(data.users);
         } else {
-          navigate("/setavatar");
+          navigate("/set-avatar");
         }
+      } catch (error) {
+        console.log(error);
       }
     };
-
-    fetchContacts();
-  }, [currentUser, navigate]);
-
+    if (currentUser) {
+      getAllcontacts();
+    }
+  }, [currentUser]);
   const handleChatChange = (chat) => {
     setCurrentChat(chat);
   };
-
   return (
-    <Container>
-      {currentUser && (
+    <>
+      <Container>
         <div className="container">
-          <Contacts
+          <Contact
             contacts={contacts}
             currentUser={currentUser}
-            changeChat={handleChatChange}
+            handleChatChange={handleChatChange}
           />
           {isLoaded && currentChat === undefined ? (
-            <Welcome currentUser={currentUser} />
+            <Welcome currentUser={currentUser} currentChat={currentChat} />
           ) : (
-            <ChatContainer currentChat={currentChat} />
+            <ChatContainer
+              currentChat={currentChat}
+              currentUser={currentUser}
+              socket={socket}
+            />
           )}
         </div>
-      )}
-    </Container>
+      </Container>
+    </>
   );
-};
+}
 
 const Container = styled.div`
   height: 100vh;
@@ -91,5 +98,3 @@ const Container = styled.div`
     }
   }
 `;
-
-export default Chat;

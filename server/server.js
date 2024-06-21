@@ -2,13 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const morgan = require("morgan");
 const userRoutes = require("./routes/userRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 
 const app = express();
 
 dotenv.config();
-
+app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
 
