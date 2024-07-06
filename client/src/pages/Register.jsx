@@ -19,7 +19,7 @@ const Register = () => {
 
   useEffect(() => {
     if (localStorage.getItem("user")) {
-      navigate("/chat");
+      navigate("/");
     }
   }, []);
 
@@ -28,11 +28,14 @@ const Register = () => {
     if (handleValidation()) {
       const { username, email, password } = values;
       try {
-        const { data } = await axios.post(registerRoute, {
-          username,
-          email,
-          password,
-        });
+        const { data } = await axios.post(
+          "https://chat-app-0mpg.onrender.com/api/auth/register",
+          {
+            username,
+            email,
+            password,
+          }
+        );
 
         if (data.status === false) {
           toast.error(data.msg, {

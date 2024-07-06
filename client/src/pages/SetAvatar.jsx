@@ -35,15 +35,18 @@ export default function SetAvatar() {
       const user = JSON.parse(localStorage.getItem("user"));
 
       try {
-        const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
-          image: avatars[selectedAvatar],
-        });
+        const { data } = await axios.post(
+          `https://chat-app-0mpg.onrender.com/api/auth/setAvatar/${user._id}`,
+          {
+            image: avatars[selectedAvatar],
+          }
+        );
         console.log(data);
         if (data.isSet) {
           user.isAvatarImageSet = true;
           user.avatarImage = data.image;
           localStorage.setItem("user", JSON.stringify(user));
-          navigate("/chat");
+          navigate("/");
         } else {
           toast.error("Error setting avatar. Please try again.", toastOptions);
         }

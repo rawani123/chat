@@ -8,7 +8,6 @@ import Welcome from "../components/Welcome1";
 import ChatContainer from "../components/ChatContainer";
 import { io } from "socket.io-client";
 
-
 const Chat = () => {
   const navigate = useNavigate();
   const socket = useRef();
@@ -29,7 +28,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (currentUser) {
-      socket.current = io("http://localhost:5000");
+      socket.current = io("https://chat-app-0mpg.onrender.com/");
       socket.current.emit("add-user", currentUser._id);
     }
   }, [currentUser]);
@@ -40,7 +39,7 @@ const Chat = () => {
         if (currentUser.isAvatarImageSet) {
           try {
             const { data } = await axios.get(
-              `${allUsersRoute}/${currentUser._id}`
+              `https://chat-app-0mpg.onrender.com/api/auth/allusers/${currentUser._id}`
             );
             // console.log(currentChat);
             setContacts(data);
@@ -73,7 +72,11 @@ const Chat = () => {
           {isLoaded && currentChat === undefined ? (
             <Welcome currentUser={currentUser} />
           ) : (
-            <ChatContainer currentChat={currentChat} currentUser={currentUser} socket={socket} />
+            <ChatContainer
+              currentChat={currentChat}
+              currentUser={currentUser}
+              socket={socket}
+            />
           )}
         </div>
       )}

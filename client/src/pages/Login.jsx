@@ -17,7 +17,7 @@ const Login = () => {
 
   useEffect(() => {
     if (localStorage.getItem("user")) {
-      navigate("/chat");
+      navigate("/");
     }
   }, []);
 
@@ -26,10 +26,13 @@ const Login = () => {
     if (handleValidation()) {
       const { username, password } = values;
       try {
-        const { data } = await axios.post(loginRoute, {
-          username,
-          password,
-        });
+        const { data } = await axios.post(
+          `https://chat-app-0mpg.onrender.com/api/auth/login`,
+          {
+            username,
+            password,
+          }
+        );
 
         if (data.status === false) {
           toast.error(data.msg, {
@@ -41,7 +44,7 @@ const Login = () => {
           });
         } else if (data.status === true) {
           localStorage.setItem("user", JSON.stringify(data.user));
-          navigate("/chat");
+          navigate("/");
         }
       } catch (error) {
         toast.error("An error occurred. Please try again later.", {

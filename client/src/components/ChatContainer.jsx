@@ -1,21 +1,21 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logout from "./Logout";
 import ChatInput from "./ChatInput";
 import axios from "axios";
 // import ChatInput from "./ChatInput";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
-const ChatContainer = ({ currentChat,currentUser,socket }) => {
+const ChatContainer = ({ currentChat, currentUser, socket }) => {
   // console.log(currentChat);
   const [messages, setMessages] = useState([]);
   const [aravialMsgs, setAravialMsgs] = useState(null);
-  const scrollRef = React.useRef(); 
+  const scrollRef = React.useRef();
 
   useEffect(() => {
     const getMessages = async () => {
       const { data } = await axios.post(
-        `http://localhost:5000/api/messages/getmsg`,
+        `https://chat-app-0mpg.onrender.com/api/messages/getmsg`,
         {
           from: currentUser?._id,
           to: currentChat?._id,
@@ -27,11 +27,14 @@ const ChatContainer = ({ currentChat,currentUser,socket }) => {
   }, [currentChat]);
 
   const handleSendMsg = async (msg) => {
-    await axios.post("http://localhost:5000/api/messages/addmsg/", {
-      from: currentUser._id,
-      to: currentChat._id,
-      message: msg,
-    });
+    await axios.post(
+      "https://chat-app-0mpg.onrender.com/api/messages/addmsg/",
+      {
+        from: currentUser._id,
+        to: currentChat._id,
+        message: msg,
+      }
+    );
     socket.current.emit("send-msg", {
       to: currentChat._id,
       from: currentUser._id,
@@ -55,11 +58,11 @@ const ChatContainer = ({ currentChat,currentUser,socket }) => {
   }, []);
 
   useEffect(() => {
-    aravialMsgs && setMessages((prev) => [...prev, aravialMsgs])
+    aravialMsgs && setMessages((prev) => [...prev, aravialMsgs]);
   }, [aravialMsgs]);
 
   useEffect(() => {
-      scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
   return (
     <>
