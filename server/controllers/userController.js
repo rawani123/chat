@@ -1,5 +1,6 @@
 const newUser = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const axios = require('axios');
 
 module.exports.login = async (req, res, next) => {
   try {
@@ -80,5 +81,26 @@ module.exports.logOut = (req, res, next) => {
     return res.status(200).send();
   } catch (ex) {
     next(ex);
+  }
+};
+
+module.exports.getavatar= async (req, res) => {
+  const api = 'https://api.multiavatar.com';
+  const data = [];
+
+  try {
+    console.log('Fetching avatars...');
+    for (let i = 0; i < 4; i++) {
+      const image = await axios.get(
+        `${api}/${Math.round(Math.random() * 1000)}`,
+        { responseType: 'arraybuffer' } // Important for binary data
+      );
+      const buffer = Buffer.from(image.data, 'binary');
+      data.push(buffer.toString('base64'));
+    }
+    res.json({ avatars: data });
+  } catch (err) {
+    console.log('Error fetching avatars:', err.message);
+    res.status(500).json({ error: 'Failed to fetch avatars' });
   }
 };

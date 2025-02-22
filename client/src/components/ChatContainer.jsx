@@ -3,8 +3,8 @@ import styled from "styled-components";
 import Logout from "./Logout";
 import ChatInput from "./ChatInput";
 import axios from "axios";
-// import ChatInput from "./ChatInput";
-import { v4 as uuidv4 } from "uuid";
+
+
 
 const ChatContainer = ({ currentChat, currentUser, socket }) => {
   // console.log(currentChat);
@@ -15,7 +15,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
   useEffect(() => {
     const getMessages = async () => {
       const { data } = await axios.post(
-        `https://chat-app-0mpg.onrender.com/api/messages/getmsg`,
+        `http://localhost:3000/api/messages/getmsg`,
         {
           from: currentUser?._id,
           to: currentChat?._id,
@@ -28,7 +28,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
 
   const handleSendMsg = async (msg) => {
     await axios.post(
-      "https://chat-app-0mpg.onrender.com/api/messages/addmsg/",
+      "http://localhost:3000/api/messages/addmsg/",
       {
         from: currentUser._id,
         to: currentChat._id,
@@ -72,7 +72,7 @@ const ChatContainer = ({ currentChat, currentUser, socket }) => {
             <div className="user-details">
               <div className="avatar">
                 <img
-                  src={`data:image/svg+xml;base64,${currentChat.avatarImage}`}
+                  src={`${currentChat.avatarImage}`}
                   alt={currentChat.username}
                 />
               </div>

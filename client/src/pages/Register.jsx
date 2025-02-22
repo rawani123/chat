@@ -29,7 +29,7 @@ const Register = () => {
       const { username, email, password } = values;
       try {
         const { data } = await axios.post(
-          "https://chat-app-0mpg.onrender.com/api/auth/register",
+          "http://localhost:3000/api/auth/register",
           {
             username,
             email,

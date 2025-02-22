@@ -28,7 +28,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (currentUser) {
-      socket.current = io("https://chat-app-0mpg.onrender.com/");
+      socket.current = io("http://localhost:3000/");
       socket.current.emit("add-user", currentUser._id);
     }
   }, [currentUser]);
@@ -39,7 +39,7 @@ const Chat = () => {
         if (currentUser.isAvatarImageSet) {
           try {
             const { data } = await axios.get(
-              `https://chat-app-0mpg.onrender.com/api/auth/allusers/${currentUser._id}`
+              `http://localhost:3000/api/auth/allusers/${currentUser._id}`
             );
             // console.log(currentChat);
             setContacts(data);

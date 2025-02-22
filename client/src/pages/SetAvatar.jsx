@@ -36,7 +36,7 @@ export default function SetAvatar() {
 
       try {
         const { data } = await axios.post(
-          `https://chat-app-0mpg.onrender.com/api/auth/setAvatar/${user._id}`,
+          `http://localhost:3000/api/auth/setAvatar/${user._id}`,
           {
             image: avatars[selectedAvatar],
           }
@@ -57,20 +57,18 @@ export default function SetAvatar() {
   };
 
   useEffect(() => {
-    const fetchAvatars = async () => {
-      const data = [];
-      for (let i = 0; i < 4; i++) {
-        const image = await axios.get(
-          `${api}/${Math.round(Math.random() * 1000)}`
-        );
-        const buffer = Buffer.from(image.data);
-        data.push(buffer.toString("base64"));
-      }
-      setAvatars(data);
-      setIsLoading(false);
+    const fetchAvatars = () => {
+      const staticAvatars = [
+        "https://avatar.iran.liara.run/public/15",
+        "https://avatar.iran.liara.run/public/8",
+        "https://avatar.iran.liara.run/public/9",
+        "https://avatar.iran.liara.run/public/10",
+      ];
+      setAvatars(staticAvatars);
+      setIsLoading(false); // Since there is no API call, loading can be set to false immediately
     };
     fetchAvatars();
-  }, [api]);
+  }, []);
 
   return (
     <>
@@ -84,23 +82,19 @@ export default function SetAvatar() {
             <h1>Pick an Avatar as your profile picture</h1>
           </div>
           <div className="avatars">
-            {avatars.map((avatar, index) => {
-              return (
-                <div
-                  key={index}
-                  className={`avatar ${
-                    selectedAvatar === index ? "selected" : ""
-                  }`}
-                  onClick={() => setSelectedAvatar(index)}
-                >
-                  <img
-                    src={`data:image/svg+xml;base64,${avatar}`}
-                    alt="avatar"
-                  />
-                </div>
-              );
-            })}
+            {avatars.map((avatar, index) => (
+              <div
+                key={index}
+                className={`avatar ${
+                  selectedAvatar === index ? "selected" : ""
+                }`}
+                onClick={() => setSelectedAvatar(index)}
+              >
+                <img src={avatar} alt={`avatar-${index + 1}`} />
+              </div>
+            ))}
           </div>
+
           <button onClick={setProfilePicture} className="submit-btn">
             Set as Profile Picture
           </button>
