@@ -36,7 +36,7 @@ export default function SetAvatar() {
 
       try {
         const { data } = await axios.post(
-          `http://localhost:3000/api/auth/setAvatar/${user._id}`,
+          `https://chat-7emc.onrender.com/api/auth/setAvatar/${user._id}`,
           {
             image: avatars[selectedAvatar],
           }
