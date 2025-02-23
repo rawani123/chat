@@ -41,7 +41,6 @@ const Chat = () => {
             const { data } = await axios.get(
               `https://chat-7emc.onrender.com/api/auth/allusers/${currentUser._id}`
             );
-            // console.log(currentChat);
             setContacts(data);
           } catch (error) {
             console.error("Failed to fetch contacts:", error);

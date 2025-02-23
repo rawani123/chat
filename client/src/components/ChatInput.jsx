@@ -20,11 +20,12 @@ export default function ChatInput({ handleSendMsg }) {
 
   const sendChat = (event) => {
     event.preventDefault();
-    if (msg.length > 0) {
-      handleSendMsg(msg);
+    if (msg.trim().length > 0) {  // Trim the message and check if it's not empty
+      handleSendMsg(msg.trim());
       setMsg("");
     }
   };
+  
 
   return (
     <Container>
